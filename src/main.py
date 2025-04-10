@@ -5,9 +5,10 @@ import uuid
 import os
 import json
 from utils.agent import flowtask
+from dotenv import load_dotenv
 
-# API
-# tgp_v1_lkTrxs-5aS21tgMJnoTZt0EZ3YZ3RGNVfhb_8OTWkP0
+# Cargar variables de entorno
+load_dotenv(dotenv_path="config.env")
 
 def generate_unique_foldername(idmanual, new): # generador de nombres de carpeta
     """Generates a unique foldername using UUID."""
@@ -33,10 +34,10 @@ async def imaGen(prompt, session, unique_foldername):
     Genera una imagen a partir de un prompt utilizando la API de Together.
     """
     print(f"Generando imagen para: {prompt}")  # Imprime el prompt actual
-    client = Together(api_key="tgp_v1_lkTrxs-5aS21tgMJnoTZt0EZ3YZ3RGNVfhb_8OTWkP0")
+    client = Together(api_key=os.environ.get("TOGETHER_API"))
     response = client.images.generate(
         prompt=prompt,
-        model="black-forest-labs/FLUX.1-schnell",
+        model="black-forest-labs/FLUX.1-schnell", # Endpoint del modelo para la generación de imágenes
         steps=4,
         disable_safety_checker=True,
     )
@@ -108,13 +109,10 @@ async def maxgen():
         for element in listprompts:
             await imaGen(f"{element}", session, unique_foldername)  # Wait for each image to be generated and saved
 
-
 try:
     asyncio.run(maxgen())
 except Exception as e:
     print(f"An error occurred: {e}")  # Added: Print the error message
-
-
 
 
 # Documentation
